@@ -1,4 +1,5 @@
 import  {request}  from './request'
+import type { LoginReq, LoginResp, RecordsResp } from '@/types/api'
 
 export const loginAPI = (l: LoginReq) => {
   return request<LoginResp>({
@@ -8,8 +9,8 @@ export const loginAPI = (l: LoginReq) => {
   })
 }
 
-export const getRecords = (offset: string) => {
-  return request<RecordsPage>({
+export const getRecords = (offset: number) => {
+  return request<RecordsResp>({
     method: 'get',
     url: '/records',
     params: {
@@ -29,31 +30,3 @@ export const checkRecord = (recordId: number, result: number) => {
   })
 }
 
-export interface LoginReq {
-  username: string
-  password: string
-}
-
-export interface LoginResp {
-  avatar: string
-  token: string
-  userName: string
-}
-
-export interface APIResponse<T = never> {
-  code: number
-  message: string
-  data: T
-}
-
-export interface RecordsPage {
-  has_more: boolean
-  items: RecordItem[]
-}
-
-export interface RecordItem {
-  dynamic_URL: string
-  id: number
-  post_at: string
-  URL: string
-}

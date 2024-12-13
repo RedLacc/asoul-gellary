@@ -1,24 +1,25 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { checkRecord, getRecords, type RecordItem } from '@/apis/api'
-import { ElMessage } from 'element-plus'
+import { onMounted, ref } from 'vue'
+import { checkRecord, getRecords } from '@/apis/api'
+import type { RecordItem } from '@/types/api'
 
 const records = ref<RecordItem[]>([])
-const loading = ref(true)
+const hasMore = ref(false)
+const offset = ref(0)
+const loading = ref(false) // 用于显示加载状态
 
-async function fetchRecords() {
-  try {
-    const response = await getRecords('')
-    records.value = response.data.items
-  } catch (error) {
-    ElMessage.error(error as Error)
-  } finally {
-    loading.value = false
+const loadMoreRecords = async () => {
+  loading.value = true // 开始加载
+  const resp = await getRecords(offset.value)
+  if (resp && resp.data && resp.data.items) {
+    records.value.push(...resp.data.items)
+    offset.value = resp.data.offset
+    hasMore.value = resp.data.has_more
   }
 }
 
 onMounted(() => {
-  fetchRecords()
+  loadMoreRecords() // 初始化时加载图片
 })
 </script>
 

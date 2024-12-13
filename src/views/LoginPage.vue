@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import {  ref } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { User, Lock } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-// import { useRouter } from 'vue-router'
-import type { LoginReq } from '@/apis/api'
+import type { LoginReq } from '@/types/api'
+import { useRouter } from 'vue-router'
 
-// const router = useRouter()
+const router = useRouter()
 const loginInfo = ref<LoginReq>({
   username: '',
   password: '',
@@ -24,10 +23,8 @@ const remember = ref(true)
 const login = async (info: LoginReq) => {
   try {
     await useUserStore().login(info)
-  } catch (error) {
-    ElMessage.error((error as Error))
-  }
-  // await router.push({ name: 'home' })
+  } catch (error) {}
+  await router.push({ path: '/records' })
 }
 </script>
 
@@ -35,7 +32,7 @@ const login = async (info: LoginReq) => {
   <div class="bg">
     <div class="login-container">
       <h1 class="title">登录</h1>
-      <el-form  :model="loginInfo">
+      <el-form :model="loginInfo">
         <el-form-item prop="userName">
           <el-input
             placeholder="请输入用户名"

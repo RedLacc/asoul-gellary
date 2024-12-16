@@ -22,7 +22,7 @@ export const getRecords = (offset: number) => {
 export const checkRecord = (recordId: number, result: number) => {
   return request({
     method: 'get',
-    url: '/check',
+    url: '/records/check',
     params: {
       record_id: recordId,
       result: result,

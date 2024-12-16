@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { checkRecord, getRecords } from '@/apis/api'
 import type { RecordItem } from '@/types/api'
+import { ElMessage } from 'element-plus'
 
 const records = ref<RecordItem[]>([])
 const hasMore = ref(false)
@@ -10,11 +11,15 @@ const loading = ref(false) // 用于显示加载状态
 
 const loadMoreRecords = async () => {
   loading.value = true // 开始加载
-  const resp = await getRecords(offset.value)
-  if (resp && resp.data && resp.data.items) {
-    records.value.push(...resp.data.items)
-    offset.value = resp.data.offset
-    hasMore.value = resp.data.has_more
+  try {
+    const resp = await getRecords(offset.value)
+    if (resp && resp.data && resp.data.items) {
+      records.value.push(...resp.data.items)
+      offset.value = resp.data.offset
+      hasMore.value = resp.data.has_more
+    }
+  } catch (e) {
+    ElMessage.error(e as Error)
   }
 }
 
@@ -25,13 +30,11 @@ onMounted(() => {
 
 <template>
   <div class="gallery-container">
-    <div class="image-grid">
-      <div v-for="item in records" :key="item.id" class="image-item">
-        <img :src="item.URL" alt="Image" class="image" />
-        <div class="button-group">
-          <button @click="checkRecord(item.id, 1)">是</button>
-          <button @click="checkRecord(item.id, 0)">否</button>
-        </div>
+    <div v-for="item in records" :key="item.id" class="image-item">
+      <img :src="item.URL" alt="Image" class="image" />
+      <div class="button-group">
+        <button style="text-align: left" @click="checkRecord(item.id, 1)">是</button>
+        <button style="text-align: right" @click="checkRecord(item.id, 0)">否</button>
       </div>
     </div>
   </div>
@@ -39,16 +42,10 @@ onMounted(() => {
 
 <style scoped>
 .gallery-container {
-  padding: 20px;
-  text-align: center;
-}
-
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  /* 固定为5列 */
-  grid-gap: 15px;
-  /* 图片之间的间距 */
+  column-count: 4;
+  column-gap: 20px;
+  column-fill: balance;
+  padding: 2rem;
 }
 
 .image-item {
@@ -69,7 +66,6 @@ onMounted(() => {
 
 .image:hover {
   transform: scale(1.05);
-  /* 鼠标悬停时轻微放大 */
 }
 
 .placeholder {

@@ -4,6 +4,7 @@ import { useUserStore } from '@/stores/UserStore'
 import { User, Lock } from '@element-plus/icons-vue'
 import type { LoginReq } from '@/types/api'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const loginInfo = ref<LoginReq>({
@@ -23,7 +24,9 @@ const remember = ref(true)
 const login = async (info: LoginReq) => {
   try {
     await useUserStore().login(info)
-  } catch (error) {}
+  } catch (error) {
+    ElMessage.error(error as Error)
+  }
   await router.push({ path: '/records' })
 }
 </script>

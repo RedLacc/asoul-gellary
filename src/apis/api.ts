@@ -1,5 +1,6 @@
 import  {request}  from './request'
 import type { LoginReq, LoginResp, RecordsResp } from '@/types/api'
+import type { CheckResult } from '@/types/enum'
 
 export const loginAPI = (l: LoginReq) => {
   return request<LoginResp>({
@@ -19,7 +20,7 @@ export const getRecords = (offset: number) => {
   })
 }
 
-export const checkRecord = (recordId: number, result: number) => {
+export const checkRecord = (recordId: number, result: CheckResult) => {
   return request({
     method: 'get',
     url: '/records/check',

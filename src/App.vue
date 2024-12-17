@@ -4,9 +4,7 @@
   </div>
 </template>
 
-<script lang="ts">
-
-</script>
+<script lang="ts"></script>
 
 <style>
 body {
@@ -16,10 +14,4 @@ body {
   padding: 0;
 }
 
-#app {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
 </style>

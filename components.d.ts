@@ -16,4 +16,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     ShowBoard: typeof import('./src/components/ShowBoard.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
+  }
 }

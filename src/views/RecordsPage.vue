@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { checkRecord, getRecords } from '@/apis/api'
 import type { RecordItem } from '@/types/api'
 import { ElMessage } from 'element-plus'
+import type { CheckResult } from '@/types/enum'
 
 const records = ref<RecordItem[]>([])
 const hasMore = ref(false)
@@ -19,28 +20,55 @@ const loadMoreRecords = async () => {
       hasMore.value = resp.data.has_more
     }
   } catch (e) {
-    ElMessage.error(e as Error)
+    ElMessage.error((e as Error).message)
+  }
+}
+
+const check = async (id: number, result: CheckResult) => {
+  try {
+    await checkRecord(id, result)
+    records.value = records.value.filter((item) => item.id !== id)
+  } catch (e) {
+    ElMessage.error((e as Error).message)
   }
 }
 
 onMounted(() => {
-  loadMoreRecords() // 初始化时加载图片
+  loadMoreRecords()
 })
 </script>
 
 <template>
-  <div class="gallery-container">
+  <div
+    class="gallery-container"
+    v-infinite-scroll="loadMoreRecords"
+    :infinite-scroll-disabled="!hasMore"
+    :infinite-scroll-distance="600"
+  >
     <div v-for="item in records" :key="item.id" class="image-item">
-      <img :src="item.URL" alt="Image" class="image" />
+      <a :href="'https://' + item.dynamic_URL" target="_blank">
+        <img :src="item.URL" alt="Image" class="image" />
+      </a>
       <div class="button-group">
-        <button style="text-align: left" @click="checkRecord(item.id, 1)">是</button>
-        <button style="text-align: right" @click="checkRecord(item.id, 0)">否</button>
+        <button style="background-color: #e799b0" @click="check(item.id, 1)">是</button>
+        <button style="background-color: #9ac8e2" @click="check(item.id, 0)">否</button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.button-group button {
+  flex: 1;
+  padding: 10px;
+}
+
 .gallery-container {
   column-count: 4;
   column-gap: 20px;
@@ -51,16 +79,14 @@ onMounted(() => {
 .image-item {
   overflow: hidden;
   border-radius: 8px;
+  margin: 10px 0;
   background-color: #f8f8f8;
 }
 
 .image {
   width: 100%;
   height: auto;
-  /* 确保图片保持原比例 */
   object-fit: contain;
-  /* 确保图片不被裁剪，保持原有宽高比例 */
-  border-radius: 8px;
   transition: transform 0.3s ease;
 }
 
@@ -68,33 +94,10 @@ onMounted(() => {
   transform: scale(1.05);
 }
 
-.placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  /* 设置占位符的固定高度 */
-  background-color: #e0e0e0;
-  color: #999;
-  border-radius: 8px;
-}
-
-.image-title {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #333;
-  font-weight: 600;
-}
-
-.load-more {
-  margin-top: 20px;
-}
-
 button {
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 20px;
   border: none;
-  background-color: #007bff;
   color: white;
   cursor: pointer;
   border-radius: 5px;
@@ -108,10 +111,5 @@ button:hover {
 button:disabled {
   background-color: #999;
   cursor: not-allowed;
-}
-
-.error {
-  color: red;
-  margin-top: 20px;
 }
 </style>

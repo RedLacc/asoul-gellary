@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance } from 'axios'
 import { useUserStore } from '@/stores/UserStore'
+import { ElMessage } from 'element-plus'
 
 export const baseURL = 'http://localhost:53671'
 
@@ -25,7 +26,8 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (resp) => {
     if (resp.data.code !== 0) {
-      throw new Error(resp.data.message) // Better to throw an Error object
+      ElMessage.error(resp.data.message)
+      return Promise.reject(resp.data.message)
     }
     return resp.data
   },
